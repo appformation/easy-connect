@@ -33,7 +33,7 @@ def load_and_parse_ssh_config():
         content = f.readlines()
 
     last_entry = None
-    current_letter = 96
+    current_letter = 48
 
     for entry in content:
 
@@ -119,15 +119,15 @@ if __name__ == "__main__":
     load_and_parse_ssh_config()
     print_list_of_entries()
 
-    key = wait_key()
+    try:
 
-    for entry in ssh_entries:
-        if entry['key'] == ord(key.lower()):
+        key = wait_key()
 
-            time.sleep(1)
-            subprocess.call("clear")
+        for entry in ssh_entries:
+            if entry['key'] == ord(key.lower()):
 
-            try:
+                time.sleep(1)
+                subprocess.call("clear")
                 subprocess.call("ssh %s" % entry['name'], shell=True)
-            except:
-                pass
+    except:
+        pass

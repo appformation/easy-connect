@@ -33,19 +33,23 @@ def load_and_parse_ssh_config():
         content = f.readlines()
 
     last_entry = None
-    current_letter = 48
+    current_letter = 49
 
     for entry in content:
 
         if entry.startswith('Host '):
 
             if last_entry is not None:
+                if "host" not in last_entry:
+                    last_entry['host'] = last_entry['name']
+
                 ssh_entries.append(last_entry)
+
+                current_letter += 1
                 last_entry = None
 
             if last_entry is None:
                 last_entry = {}
-                current_letter += 1
                 if current_letter == 58:
                     current_letter = 97
 
@@ -58,7 +62,8 @@ def load_and_parse_ssh_config():
             last_entry['user'] = entry.strip()[5:]
 
     if last_entry is not None:
-        ssh_entries.append(last_entry)
+        if "host" in last_entry:
+            ssh_entries.append(last_entry)
 
 
 # Print header

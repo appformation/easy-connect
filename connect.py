@@ -24,12 +24,14 @@ import time
 # Contains all ssh entries
 ssh_entries = []
 
+# Config file
+config_file_path = '%s/.ssh/config' % os.path.expanduser('~')
+
 
 # Load and parse ssh config file and fill out ssh_entries
 def load_and_parse_ssh_config():
 
-    user_dir = os.path.expanduser('~')
-    with open('%s/.ssh/config' % user_dir) as f:
+    with open(config_file_path) as f:
         content = f.readlines()
 
     last_entry = None
@@ -69,18 +71,18 @@ def load_and_parse_ssh_config():
 # Print header
 def print_header():
 
-    print ""
-    print Color("  {autocyan}EasyConnect{/autocyan}")
-    print Color("  {autocyan}-----------{/autocyan}")
-    print Color("  {autoyellow}Select ssh configuration to launch{/autoyellow}")
-    print ""
+    print ''
+    print Color('  {autocyan}EasyConnect{/autocyan}')
+    print Color('  {autocyan}-----------{/autocyan}')
+    print Color('  {autoyellow}Select ssh configuration to launch{/autoyellow}')
+    print ''
 
 
 # Print list of all entries
 def print_list_of_entries():
 
     for entry in ssh_entries:
-        print Color("  {autocyan}" + chr(entry['key']) + "){/autocyan} {autowhite}" + entry['name'] + "{/autowhite}")
+        print Color('  {autocyan}' + chr(entry['key']) + '){/autocyan} {autowhite}' + entry['name'] + '{/autowhite}')
 
     print ""
 
@@ -91,7 +93,7 @@ def print_list_of_entries():
 def wait_key():
 
     result = None
-    print Color("  {autowhite}>{/autowhite}"),
+    print Color('  {autowhite}>{/autowhite}'),
 
     if os.name == 'nt':
         import msvcrt
@@ -111,7 +113,7 @@ def wait_key():
             pass
         finally:
             termios.tcsetattr(fd, termios.TCSAFLUSH, old_term)
-            print Color("{autoyellow}" + result + "{/autoyellow}\n")
+            print Color('{autoyellow}' + result + '{/autoyellow}\n')
 
     return result
 
@@ -120,6 +122,10 @@ def wait_key():
 if __name__ == "__main__":
 
     print_header()
+
+    if not os.path.isfile(config_file_path):
+        print Color('  {autored}~/.ssh/config file is missing{/autored}\n')
+        quit()
 
     load_and_parse_ssh_config()
     print_list_of_entries()
@@ -132,7 +138,8 @@ if __name__ == "__main__":
             if entry['key'] == ord(key.lower()):
 
                 time.sleep(1)
-                subprocess.call("clear")
-                subprocess.call("ssh %s" % entry['name'], shell=True)
+                subprocess.call('clear')
+                subprocess.call('ssh %s' % entry['name'], shell=True)
+
     except:
         pass
